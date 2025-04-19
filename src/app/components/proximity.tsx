@@ -50,7 +50,7 @@ export default function Proximity(){
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <Card>
+          <Card className="shadow-none border-t rounded-none">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg font-medium flex items-center">
                 <Ruler className="h-5 w-5 mr-2" />
@@ -58,14 +58,14 @@ export default function Proximity(){
               </CardTitle>
               <CardDescription>Distance to highways, ports, major tenants, and rail infrastructure</CardDescription>
             </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="highways" className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4">
-                  <TabsTrigger value="highways">Highways</TabsTrigger>
-                  <TabsTrigger value="ports">Ports</TabsTrigger>
-                  <TabsTrigger value="airports">Airports</TabsTrigger>
-                  <TabsTrigger value="locations">Key Locations</TabsTrigger>
-                  <TabsTrigger value="tenants">Major Tenants</TabsTrigger>
+            <CardContent className=" p-0 sm:px-5">
+              <Tabs defaultValue="highways" className="w-full max-w-7xl mx-auto">
+                <TabsList className="flex justify-between items-center sm:grid w-full sm:grid-cols-5 mb-4">
+                  <TabsTrigger value="highways" className="text-[12px]">Highways</TabsTrigger>
+                  <TabsTrigger value="ports" className="text-[12px]">Ports</TabsTrigger>
+                  <TabsTrigger value="airports" className="text-[12px]">Airports</TabsTrigger>
+                  <TabsTrigger value="locations" className="text-[12px]">Key Locations</TabsTrigger>
+                  <TabsTrigger value="tenants" className="text-[12px]">Major Tenants</TabsTrigger>
                 </TabsList>
     
                 <TabsContent value="highways">

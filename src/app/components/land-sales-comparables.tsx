@@ -207,7 +207,7 @@ export default function SalesComparables() {
         <CardDescription>Recent land sales with price per square foot, zoning, and size details</CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="grid" className="w-full">
+        <Tabs defaultValue="grid" className="w-full max-w-7xl mx-auto">
           <TabsList className="grid w-full grid-cols-2 lg:flex lg:justify-center lg:items-center mb-4">
             <TabsTrigger value="grid" className="lg:hidden">
               Grid View

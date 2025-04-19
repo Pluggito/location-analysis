@@ -69,7 +69,7 @@ export default function SupplyPipeline() {
           <CardDescription>Nearby developments, construction timelines, and property type mix</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="list" className="w-full">
+          <Tabs defaultValue="list" className="w-full max-w-7xl mx-auto">
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="list">List View</TabsTrigger>
               <TabsTrigger value="timeline">Timeline View</TabsTrigger>
@@ -77,7 +77,7 @@ export default function SupplyPipeline() {
             <TabsContent value="list">
               <AnimatedContainer stagger={true} className="space-y-4">
                 {developments.map((dev, index) => (
-                  <AnimatedItem key={dev.id} index={index} className="border rounded-md p-4">
+                  <AnimatedItem key={dev.id} index={index} className="border rounded-md p-3">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium">{dev.name}</h3>
