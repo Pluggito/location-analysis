@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button"
 import { FileDown, Loader2 } from "lucide-react"
 import { motion } from "framer-motion"
 import jsPDF from "jspdf"
-import {autoTable} from  "jspdf-autotable"
+import autoTable from "jspdf-autotable"
+
 
 interface TableData {
   headers: string[]
@@ -53,7 +54,7 @@ export default function PdfGenerator() {
   
       // Lease Structure
       doc.setFontSize(14);
-      doc.text("Lease Structure", 14, doc.lastAutoTable.finalY + 10);
+      doc.text("Lease Structure", 14, doc.lastAutoTable!.finalY + 10);
   
       const leaseData = {
         headers: ["Lease Terms", "Details"],
@@ -74,7 +75,7 @@ export default function PdfGenerator() {
       };
   
       autoTable(doc, {
-        startY: doc.lastAutoTable.finalY + 15,
+        startY: doc.lastAutoTable!.finalY + 15,
         head: [leaseData.headers],
         body: leaseData.rows,
         theme: "grid",
@@ -83,7 +84,7 @@ export default function PdfGenerator() {
   
       // Space Breakdown
       doc.setFontSize(14);
-      doc.text("Space Breakdown", 14, doc.lastAutoTable.finalY + 10);
+      doc.text("Space Breakdown", 14, doc.lastAutoTable!.finalY + 10);
   
       const spaceData = {
         headers: ["Component", "RSF", "% of NRA", "Annual Rent", "Rent PSF"],
@@ -95,7 +96,7 @@ export default function PdfGenerator() {
       };
   
       autoTable(doc, {
-        startY: doc.lastAutoTable.finalY + 15,
+        startY: doc.lastAutoTable!.finalY + 15,
         head: [spaceData.headers],
         body: spaceData.rows,
         theme: "grid",
@@ -135,7 +136,7 @@ export default function PdfGenerator() {
   
       // Financial Highlights
       doc.setFontSize(14);
-      doc.text("Financial Highlights", 14, doc.lastAutoTable.finalY + 10);
+      doc.text("Financial Highlights", 14, doc.lastAutoTable!.finalY + 10);
   
       const financialData = {
         headers: ["Financial Metrics", "Details"],
@@ -148,7 +149,7 @@ export default function PdfGenerator() {
       };
   
       autoTable(doc, {
-        startY: doc.lastAutoTable.finalY + 15,
+        startY: doc.lastAutoTable!.finalY + 15,
         head: [financialData.headers],
         body: financialData.rows,
         theme: "grid",
@@ -157,7 +158,7 @@ export default function PdfGenerator() {
   
       // Market Analysis
       doc.setFontSize(14);
-      doc.text("Market Analysis", 14, doc.lastAutoTable.finalY + 10);
+      doc.text("Market Analysis", 14, doc.lastAutoTable!.finalY + 10);
   
       const marketData = {
         headers: ["Market Factors", "Details"],
@@ -171,7 +172,7 @@ export default function PdfGenerator() {
       };
   
       autoTable(doc, {
-        startY: doc.lastAutoTable.finalY + 15,
+        startY: doc.lastAutoTable!.finalY + 15,
         head: [marketData.headers],
         body: marketData.rows,
         theme: "grid",
@@ -180,7 +181,7 @@ export default function PdfGenerator() {
   
       // Location Highlights
       doc.setFontSize(14);
-      doc.text("Location Highlights", 14, doc.lastAutoTable.finalY + 10);
+      doc.text("Location Highlights", 14, doc.lastAutoTable!.finalY + 10);
   
       const locationHighlights = [
         "• Located on Brooklyn's waterfront in Red Hook logistics submarket",
@@ -193,15 +194,15 @@ export default function PdfGenerator() {
       ];
   
       doc.setFontSize(11);
-      let yPos = doc.lastAutoTable.finalY + 15;
+      let yPos = doc.lastAutoTable!.finalY + 15;
       locationHighlights.forEach((highlight) => {
         doc.text(highlight, 14, yPos);
         yPos += 7;
       });
   
       // Risk Factors
-      doc.setFontSize(14);
-      doc.text("Risk Factors", 14, yPos + 5);
+      doc.setFontSize(12);
+      doc.text("Risk Factors", 12, yPos + 5);
   
       const riskFactors = [
         "• Financing assumption required by 2028 (current debt matures in February 2028)",
@@ -210,11 +211,11 @@ export default function PdfGenerator() {
         "• Brooklyn zoning changes introduced in May 2024 could impact future property value",
       ];
   
-      doc.setFontSize(11);
+      doc.setFontSize(9);
       yPos += 10;
       riskFactors.forEach((risk) => {
-        doc.text(risk, 14, yPos);
-        yPos += 7;
+        doc.text(risk, 9, yPos);
+        yPos += 5;
       });
   
       // Opportunity Summary

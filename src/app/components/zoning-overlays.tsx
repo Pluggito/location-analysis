@@ -127,7 +127,7 @@ export default function ZonesOverlays(){
                         className="border rounded-md p-3"
                       >
                         <div className="text-xs text-gray-500 capitalize">{key.replace(/([A-Z])/g, " $1").trim()}</div>
-                        <div className="font-medium text-sm">{value}</div>
+                        <div className="font-medium text-[11px] sm:text-sm">{value}</div>
                       </motion.div>
                     ))}
                   </div>

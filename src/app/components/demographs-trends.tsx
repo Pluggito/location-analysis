@@ -53,7 +53,7 @@ const spendingData = [
 
 export default function Demographics() {
   return (
-    <Card className="shadow-none border-t rounded-none">
+    <Card className="shadow-none border-t rounded-none mt-5">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-medium flex items-center">
           <Users className="h-5 w-5 mr-2" />

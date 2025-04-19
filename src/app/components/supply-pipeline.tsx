@@ -55,7 +55,7 @@ export default function SupplyPipeline() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-      <Card className=" shadow-none border-t rounded-none">
+      <Card className=" shadow-none w-full rounded-none ">
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg font-medium flex items-center">
@@ -71,8 +71,8 @@ export default function SupplyPipeline() {
         <CardContent>
           <Tabs defaultValue="list" className="w-full max-w-7xl mx-auto">
             <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="list">List View</TabsTrigger>
               <TabsTrigger value="timeline">Timeline View</TabsTrigger>
+              <TabsTrigger value="list">List View</TabsTrigger>
             </TabsList>
             <TabsContent value="list">
               <AnimatedContainer stagger={true} className="space-y-4">
