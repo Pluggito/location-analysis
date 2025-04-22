@@ -149,7 +149,7 @@ const Proximity: React.FC<ProximityProps> = ({ loading, setLoading }) => {
                         className="border rounded-md p-4 flex justify-between items-center"
                       >
                         <div>
-                          <div className="font-medium">{highway.name}</div>
+                          <div className="font-medium">{highway.name}{highway.sign}</div>
                           <div className="text-sm text-gray-500 border-4">Travel Time: {highway.travelTime || "N/A"}</div>
                         </div>
                         <motion.div
@@ -405,7 +405,7 @@ const Proximity: React.FC<ProximityProps> = ({ loading, setLoading }) => {
                         <div>
                           <div className="font-medium">{tenant.name || "N/A"}</div>
                           <div className="text-sm text-gray-500">
-                            {tenant.industry && `Industry: ${tenant.industry}`}
+                            {tenant.industry || `Industry: ${tenant.company}`}
                             {tenant.travelTime && ` • Travel Time: ${tenant.travelTime}`}
                           </div>
                         </div>

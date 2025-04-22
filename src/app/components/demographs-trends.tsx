@@ -156,7 +156,7 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
     <div key={index} className="flex justify-between items-center">
       <div>
         <h3 className="font-medium">Population Trends</h3>
-        <p className="text-sm text-gray-500">{item.description}</p>
+        <p className="text-sm text-gray-500">{item.insights}</p>
       </div>
       <div className="text-right">
         <div className="text-sm font-medium">{item.state} Population</div>
@@ -171,7 +171,7 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
     <div key={index} className="flex justify-between items-center">
       <div>
         <h3 className="font-medium">Income Insights</h3>
-        <p className="text-sm text-gray-500">{item.description}</p>
+        <p className="text-sm text-gray-500">{item.insights}</p>
       </div>
       <div className="text-right">
         <div className="text-sm font-medium">Median Income</div>
@@ -186,7 +186,7 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
     <div key={index} className="flex justify-between items-center">
       <div>
         <h3 className="font-medium">Consumer Spending</h3>
-        <p className="text-sm text-gray-500">{item.description}</p>
+        <p className="text-sm text-gray-500">{item.insights}</p>
       </div>
       <div className="text-right">
         <div className="text-sm font-medium">Average Spending</div>
