@@ -33,12 +33,14 @@ interface IncomeData {
   insights: string;
   description: string;
   income: number;
+  year: string;
 }
 
 interface SpendingData {
   insights: string;
   description: string;
   amount: number;
+  category: string;
 }
 
 interface DemographicTrends {
