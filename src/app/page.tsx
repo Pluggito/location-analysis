@@ -16,8 +16,13 @@ import SupplyPipeline from "./components/supply-pipeline";
 import ZonesOverlays from "./components/zoning-overlays";
 import { Button } from "@/components/ui/button";
 import PdfGenerator from "./components/pdf-extract";
+import { useState } from "react";
+import SourceUpload from "./components/source-upload";
 
 export default function Home() {
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [loading, setLoading ] = useState(false)
+
   return (
     <div className="container relative overflow-hidden mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
       <ArrowLeft size={25} className="mt-3 sm:mt-1" />
@@ -68,15 +73,16 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
-        <SupplyPipeline />
-        <SalesComparables />
+      {isUploaded ? (<section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+        <SupplyPipeline loading={loading} setLoading={setLoading}/>
+        <SalesComparables  loading={loading} setLoading={setLoading} />
         <div className="md:col-span-2">
           <Demographics />
         </div>
-        <Proximity />
+        <Proximity loading={loading} setLoading={setLoading} />
         <ZonesOverlays />
-      </section>
+      </section>) : <SourceUpload loading={loading} setLoading={setLoading} setIsUploaded={setIsUploaded}/>}
+      
     </div>
   );
 }

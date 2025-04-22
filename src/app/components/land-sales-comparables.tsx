@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -8,184 +10,68 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { AnimatedContainer, AnimatedItem } from "@/components/ui/animate"
 import { motion } from "framer-motion"
+import axios from "axios"
 
-const comparables = [
-  {
-    id: 1,
-    address: "Rock Lake Business Center",
-    submarket: "South Florida (FL)",
-    date: "Jun-24",
-    price: "$100,500,000",
-    pricePSF: "$392",
-    size: "256,436 sqft",
-    zoning: "Commercial",
-    capRate: "4.9%",
-    seller: "Ivanhoe Cambridge, Oxford Properties",
-    buyer: "Tishman Speyer",
-    tenant: "Amazon",
-  },
-  {
-    id: 2,
-    address: "1 Debaun Rd",
-    submarket: "Exit 8A (NJ)",
-    date: "Jun-24",
-    price: "$41,903,580",
-    pricePSF: "$315",
-    size: "132,930 sqft",
-    zoning: "Industrial",
-    capRate: "5.0%",
-    seller: "Scannell Properties",
-    buyer: "Cabot",
-    tenant: "Berry Plastics",
-  },
-  {
-    id: 3,
-    address: "Baylis 495 Business Park",
-    submarket: "Long Island",
-    date: "May-24",
-    price: "$44,000,000",
-    pricePSF: "$425",
-    size: "103,500 sqft",
-    zoning: "Commercial",
-    capRate: "5.1%",
-    seller: "Creation Equity, JPM",
-    buyer: "Bentall Green Oak",
-    tenant: "Keurig Dr. Pepper",
-  },
-  {
-    id: 4,
-    address: "Blackstone Portfolio",
-    submarket: "National (CA, NY, NJ)",
-    date: "May-24",
-    price: "$364,500,000",
-    pricePSF: "$296",
-    size: "1,233,140 sqft",
-    zoning: "Various",
-    capRate: "4.3%",
-    seller: "Blackstone",
-    buyer: "Terreno Realty",
-    tenant: "Various",
-  },
-  {
-    id: 5,
-    address: "Bridgepoint Maspeth (58 Maurice Ave)",
-    submarket: "Queens",
-    date: "Dec-23",
-    price: "$57,000,000",
-    pricePSF: "$447",
-    size: "127,587 sqft",
-    zoning: "Industrial",
-    capRate: "3.3%",
-    seller: "Turnbridge Equities",
-    buyer: "BRIDGE",
-    tenant: "FedEx",
-  },
-  {
-    id: 6,
-    address: "Northern NJ Core Industrial Portfolio",
-    submarket: "Fairfield (NJ)",
-    date: "Nov-23",
-    price: "$116,500,000",
-    pricePSF: "$288",
-    size: "404,713 sqft",
-    zoning: "Industrial",
-    capRate: "4.6%",
-    seller: "Link Logistics, Hampshire",
-    buyer: "TA Realty",
-    tenant: "DHL",
-  },
-  {
-    id: 7,
-    address: "19 Ridgeboro Rd",
-    submarket: "Exit 8A (NJ)",
-    date: "Oct-23",
-    price: "$165,776,520",
-    pricePSF: "$323",
-    size: "513,240 sqft",
-    zoning: "Industrial",
-    capRate: "5.1%",
-    seller: "IDI Logistics, Oxford Properties",
-    buyer: "Blackstone",
-    tenant: "FedEx",
-  },
-  {
-    id: 8,
-    address: "Terminal Logistics Center (130 S Conduit Dr)",
-    submarket: "Queens",
-    date: "Mar-23",
-    price: "$136,000,000",
-    pricePSF: "$405",
-    size: "336,000 sqft",
-    zoning: "M1-1",
-    capRate: "4.4%",
-    seller: "L&B Realty Advisors",
-    buyer: "Triangle Equities, Goldman",
-    tenant: "Do & Co",
-  },
-  {
-    id: 9,
-    address: "640 Columbia Street",
-    submarket: "Brooklyn",
-    date: "Jun-22",
-    price: "$330,000,000",
-    pricePSF: "$981",
-    size: "336,350 sqft",
-    zoning: "M1-1",
-    capRate: "3.5%",
-    seller: "DH Property Holdings, Goldman",
-    buyer: "CBREI",
-    tenant: "Amazon",
-  },
-  {
-    id: 10,
-    address: "12555 Flatlands",
-    submarket: "Brooklyn",
-    date: "Jun-22",
-    price: "$230,000,000",
-    pricePSF: "$1,090",
-    size: "211,000 sqft",
-    zoning: "M1-1",
-    capRate: "3.5%",
-    seller: "Amstar, Wildflower",
-    buyer: "CBREI",
-    tenant: "Amazon",
-  },
-  {
-    id: 11,
-    address: "WB Mason (1160 Commerce Ave)",
-    submarket: "Bronx",
-    date: "Apr-22",
-    price: "$75,750,000",
-    pricePSF: "$505",
-    size: "150,000 sqft",
-    zoning: "Industrial",
-    capRate: "3.0%",
-    seller: "Bradford Swett & Assocs",
-    buyer: "Link Logistics",
-    tenant: "WB Mason",
-  },
-  {
-    id: 12,
-    address: "Amazon Middlesex",
-    submarket: "I-287 (NJ)",
-    date: "Jan-22",
-    price: "$131,000,000",
-    pricePSF: "$328",
-    size: "400,000 sqft",
-    zoning: "Industrial",
-    capRate: "2.9%",
-    seller: "Rockefeller Group",
-    buyer: "CBREI",
-    tenant: "Amazon",
-  },
-]
+interface RecentSale {
+  address: string;
+  price: number;
+  date: string;
+  size: number;
+  buyers: string;
+  price_psf: number;
+  submarket: string;
+  cap_rate: string;
+  tenant: string;
+}
 
-export default function SalesComparables() {
-  const [showAllRows, setShowAllRows] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-  const initialRowsToShow = 5
+interface LandSaleComparables {
+  price_per_sqft: number;
+  zoning: string;
+  parcel_size: string[];
+  recent_sales: RecentSale[];
+}
 
-  const displayedComparables = showAllRows ? comparables : comparables.slice(0, initialRowsToShow)
+interface ApiResponse {
+  landSaleComparables: LandSaleComparables;
+  success?: boolean;
+  error?: string;
+}
+
+interface SalesComparablesProps {
+  setLoading: (value: boolean) => void;
+  loading: boolean;
+}
+
+const SalesComparables: React.FC<SalesComparablesProps> = ({ loading, setLoading }) => {
+  const [showAllRows, setShowAllRows] = useState(false);
+  const [recentSales, setRecentSales] = useState<RecentSale[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const initialRowsToShow = 5;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get<ApiResponse>("http://localhost:5000/data/latest");
+
+        if (!response.data?.landSaleComparables?.recent_sales) {
+          throw new Error("Invalid data format received from server");
+        }
+
+        setRecentSales(response.data.landSaleComparables.recent_sales);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to load sales data";
+        console.error("Error fetching sales comparables data:", errorMessage);
+        setError(errorMessage);
+        setRecentSales([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [setLoading]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -194,10 +80,41 @@ export default function SalesComparables() {
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
 
+  const formatCurrency = (value: number | undefined): string => {
+    if (!value) return "N/A";
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'USD', 
+      maximumFractionDigits: 0 
+    }).format(value);
+  };
+
+  const formatSize = (sqft: number | undefined): string => {
+    if (!sqft) return "N/A";
+    return new Intl.NumberFormat().format(sqft) + ' sqft';
+  };
+
   const toggleShowMore = () => setShowAllRows(!showAllRows)
 
+  if (error) {
+    return (
+      <Card className="shadow-none w-full rounded-none">
+        <CardContent className="p-6">
+          <div className="text-red-500">Error loading sales data: {error}</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Calculate displayed sales based on showAllRows state
+  const displayedSales = showAllRows ? recentSales : recentSales.slice(0, initialRowsToShow);
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      transition={{ duration: 0.5 }}
+    >
       <Card className="shadow-none w-full rounded-none">
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
@@ -206,7 +123,7 @@ export default function SalesComparables() {
               Land Sale Comparables
             </CardTitle>
             <Badge variant="outline" className="text-xs">
-              {comparables.length} Recent Sales
+              {recentSales.length} Recent Sales
             </Badge>
           </div>
           <CardDescription>Recent land sales with price per square foot, zoning, and size details</CardDescription>
@@ -219,70 +136,90 @@ export default function SalesComparables() {
             </TabsList>
 
             <TabsContent value="grid">
-              <AnimatedContainer stagger className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {displayedComparables.map((comp) => (
-                  <AnimatedItem key={comp.id} className="border rounded-md p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">{comp.address}</h3>
-                        <div className="flex items-center text-sm text-gray-500 mt-1">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          {comp.submarket}
+              <AnimatedContainer stagger={true} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {recentSales.length > 0 ? (
+                  displayedSales.map((sale, index) => (
+                    <AnimatedItem 
+                      key={sale.address || index} 
+                      index={index} 
+                      className="border rounded-md p-4"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-medium">{sale.address || "N/A"}</h3>
+                          <div className="flex items-center text-sm text-gray-500 mt-1">
+                            <MapPin className="h-3 w-3 mr-1" />
+                            {sale.submarket || "N/A"}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-gray-500">Date</div>
+                          <div className="font-medium">{sale.date || "N/A"}</div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm text-gray-500">Date</div>
-                        <div className="font-medium">{comp.date}</div>
+                      <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
+                        <div>
+                          <div className="text-gray-500">Price</div>
+                          <div className="font-medium">{formatCurrency(sale.price)}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Price PSF</div>
+                          <div className="font-medium">${sale.price_psf || "N/A"}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Size</div>
+                          <div className="font-medium">{formatSize(sale.size)}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Cap Rate</div>
+                          <div className="font-medium">{sale.cap_rate || "N/A"}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Zoning</div>
+                          <div className="font-medium">{sale.zoning || "N/A"}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Tenant</div>
+                          <div className="font-medium">{sale.tenant || "N/A"}</div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-                      <div>
-                        <div className="text-gray-500">Price</div>
-                        <div className="font-medium">{comp.price}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">Price PSF</div>
-                        <div className="font-medium">{comp.pricePSF}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">Size</div>
-                        <div className="font-medium">{comp.size}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">Cap Rate</div>
-                        <div className="font-medium">{comp.capRate}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">Zoning</div>
-                        <div className="font-medium">{comp.zoning}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">Tenant</div>
-                        <div className="font-medium">{comp.tenant}</div>
-                      </div>
-                    </div>
-                  </AnimatedItem>
-                ))}
-                {comparables.length > initialRowsToShow && (
-                  <div className="col-span-full mt-4">
-                    <Button variant="ghost" className="w-full flex items-center justify-center" onClick={toggleShowMore}>
-                      {showAllRows ? (
-                        <>
-                          Show Less <ChevronUp className="ml-2 h-4 w-4" />
-                        </>
-                      ) : (
-                        <>
-                          See More <ChevronDown className="ml-2 h-4 w-4" />
-                        </>
-                      )}
-                    </Button>
+                    </AnimatedItem>
+                  ))
+                ) : (
+                  <div className="col-span-full">
+                    <p>No sales comparables available.</p>
                   </div>
                 )}
               </AnimatedContainer>
+
+              {recentSales.length > initialRowsToShow && (
+                <div className="col-span-full mt-4">
+                  <Button
+                    variant="ghost"
+                    className="w-full flex items-center justify-center"
+                    onClick={toggleShowMore}
+                  >
+                    {showAllRows ? (
+                      <>
+                        Show Less <ChevronUp className="ml-2 h-4 w-4" />
+                      </>
+                    ) : (
+                      <>
+                        See More <ChevronDown className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="table">
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="overflow-x-auto">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="overflow-x-auto"
+              >
                 <table className="min-w-full text-sm border">
                   <thead>
                     <tr className="bg-gray-100 text-left">
@@ -298,25 +235,37 @@ export default function SalesComparables() {
                     </tr>
                   </thead>
                   <tbody>
-                    {displayedComparables.map((comp) => (
-                      <tr key={comp.id} className="hover:bg-gray-50">
-                        <td className="p-2 border">{comp.address}</td>
-                        <td className="p-2 border">{comp.submarket}</td>
-                        <td className="p-2 border">{comp.date}</td>
-                        <td className="p-2 border">{comp.price}</td>
-                        <td className="p-2 border">{comp.pricePSF}</td>
-                        <td className="p-2 border">{comp.size}</td>
-                        <td className="p-2 border">{comp.capRate}</td>
-                        <td className="p-2 border">{comp.zoning}</td>
-                        <td className="p-2 border">{comp.tenant}</td>
+                    {displayedSales.length > 0 ? (
+                      displayedSales.map((sale, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="p-2 border">{sale.address || "N/A"}</td>
+                          <td className="p-2 border">{sale.submarket || "N/A"}</td>
+                          <td className="p-2 border">{sale.date || "N/A"}</td>
+                          <td className="p-2 border">{formatCurrency(sale.price)}</td>
+                          <td className="p-2 border">${sale.price_psf || "N/A"}</td> 
+                          <td className="p-2 border">{formatSize(sale.size)}</td>
+                          <td className="p-2 border">{sale.cap_rate || "N/A"}</td>
+                          <td className="p-2 border">{sale.zoning || "N/A"}</td>
+                          <td className="p-2 border">{sale.tenant || "N/A"}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={9} className="p-4 text-center">
+                          No sales comparables available.
+                        </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
 
-                {comparables.length > initialRowsToShow && (
+                {recentSales.length > initialRowsToShow && (
                   <div className="mt-4">
-                    <Button variant="ghost" className="w-full flex items-center justify-center" onClick={toggleShowMore}>
+                    <Button
+                      variant="ghost"
+                      className="w-full flex items-center justify-center"
+                      onClick={toggleShowMore}
+                    >
                       {showAllRows ? (
                         <>
                           Show Less <ChevronUp className="ml-2 h-4 w-4" />
@@ -337,3 +286,5 @@ export default function SalesComparables() {
     </motion.div>
   )
 }
+
+export default SalesComparables
