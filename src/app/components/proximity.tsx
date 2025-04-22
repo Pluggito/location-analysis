@@ -21,12 +21,15 @@ interface Highway {
   sign: number;
   name: string;
   distance: string;
+  travelTime: string;
+  description: string;
 }
 
 interface Port {
   name: string;
   distance: string;
   insights: string;
+  description?: string;
 }
 
 interface Airport {
@@ -37,6 +40,10 @@ interface Airport {
 interface MajorTenant {
   name: string;
   company: string;
+  industry?: string;
+  travelTime?: string;
+  distance?: string;
+  description?: string;
 }
 
 interface KeyLocation {
@@ -74,7 +81,7 @@ const Proximity: React.FC<ProximityProps> = ({ loading, setLoading }) => {
     const fetchProximity = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<ApiResponse>("http://localhost:5000/data/latest");
+        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/data/latest`);
         
         if (!response.data?.proximityInsights) {
           throw new Error("Invalid data format received from server");
@@ -137,7 +144,7 @@ const Proximity: React.FC<ProximityProps> = ({ loading, setLoading }) => {
                   {proximityData?.highways?.length > 0 ? (
                     proximityData.highways.map((highway, index) => (
                       <AnimatedItem
-                        key={highway}
+                        key={`${highway.state}-${highway.sign}`}
                         index={index}
                         className="border rounded-md p-4 flex justify-between items-center"
                       >

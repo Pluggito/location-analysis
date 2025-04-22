@@ -46,7 +46,7 @@ export default function ZonesOverlays() {
       setError(null);
       
       try {
-        const response = await axios.get<ApiResponse>("http://localhost:5000/data/latest");
+        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/data/latest`);
         
         if (!response.data?.zoningOverlays) {
           throw new Error("Invalid data format received from server");

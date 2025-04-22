@@ -22,6 +22,7 @@ interface RecentSale {
   submarket: string;
   cap_rate: string;
   tenant: string;
+  zoning: string;
 }
 
 interface LandSaleComparables {
@@ -53,7 +54,7 @@ const SalesComparables: React.FC<SalesComparablesProps> = ({ loading, setLoading
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<ApiResponse>("http://localhost:5000/data/latest");
+        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/data/latest`);
 
         if (!response.data?.landSaleComparables?.recent_sales) {
           throw new Error("Invalid data format received from server");

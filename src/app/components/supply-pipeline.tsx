@@ -74,7 +74,7 @@ const SupplyPipeline: React.FC<SupplyPipelineProps> = ({
     const fetchSupplyPipeline = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<ApiResponse>("http://localhost:5000/data/latest");
+        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/data/latest`);
 
         if (!response.data?.supplyPipeline) {
           throw new Error("Invalid data format received from server");
@@ -170,7 +170,7 @@ const SupplyPipeline: React.FC<SupplyPipelineProps> = ({
                           <span className="font-medium">{item.progress || "N/A"}%</span>
                         </div>
                         <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                          <AnimatedProgress value={item.progress || "N/A"} />
+                          <AnimatedProgress value={item.progress || 0} />
                         </div>
                       </div>
 
@@ -229,10 +229,10 @@ const SupplyPipeline: React.FC<SupplyPipelineProps> = ({
             </TabsContent>
 
             <TabsContent value="timeline">
-              {supplyData?.construction_timeline?.length > 0 ? (
-                supplyData.construction_timeline.map((dev, index) => (
+              {supplyData?.construction_timelines?.length > 0 ? (
+                supplyData.construction_timelines.map((dev, index) => (
                   <motion.div
-                    key={dev.id}
+                    key={`${dev.project}-${dev.completion}`}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.2, duration: 0.5 }}
