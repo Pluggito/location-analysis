@@ -55,40 +55,39 @@ const SourceUpload: React.FC<SourceUploadProps> = ({ setIsUploaded, loading, set
 
   const handleUpload = async () => {
     if (files.length === 0) {
-      setError("Please upload a PDF file.")
-      return
+      setError("Please upload a PDF file.");
+      return;
     }
 
-    const file = files[0]
+    const file = files[0];
     if (file.type !== "application/pdf") {
-      setError("Only PDF files are supported.")
-      return
+      setError("Only PDF files are supported.");
+      return;
     }
 
-    setLoading(true)
-    setError(null)
-    setResponse(null)
+    setLoading(true);
+    setError(null);
+    setResponse(null);
 
-    const formData = new FormData()
-    formData.append("file", file)
+    const formData = new FormData();
+    formData.append("file", file);
 
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      })
-      setResponse(res.data.data || res.data)
-      setIsUploaded(true)
-     
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+      if (!baseUrl) {
+        setError("API base URL is not defined.");
+        setLoading(false);
+        return;
+      }
+      const data  = await axios.post(`${baseUrl}/source/uploads`, formData);
+      setResponse(data);
+      setIsUploaded(true);
     } catch (err: any) {
-      console.error("Upload error:", err)
-      const message = err.response?.data?.error || "Unexpected error during upload."
-      setError(message)
+      setError(err.response?.data?.message || "An error occurred during upload.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const deleteFile = (index: number) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
@@ -127,6 +126,7 @@ const SourceUpload: React.FC<SourceUploadProps> = ({ setIsUploaded, loading, set
           className="hidden"
           accept="application/pdf"
           onChange={handleFileChange}
+          title="Upload PDF files"
         />
       </div>
 

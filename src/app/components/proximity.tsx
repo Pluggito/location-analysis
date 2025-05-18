@@ -81,7 +81,7 @@ const Proximity: React.FC<ProximityProps> = ({ loading, setLoading }) => {
     const fetchProximity = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/data/latest`);
+        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/source/latest`);
         
         if (!response.data?.proximityInsights) {
           throw new Error("Invalid data format received from server");

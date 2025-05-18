@@ -74,7 +74,7 @@ const SupplyPipeline: React.FC<SupplyPipelineProps> = ({
     const fetchSupplyPipeline = async () => {
       setLoading(true);
       try {
-        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/data/latest`);
+        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/source/latest`);
 
         if (!response.data?.supplyPipeline) {
           throw new Error("Invalid data format received from server");

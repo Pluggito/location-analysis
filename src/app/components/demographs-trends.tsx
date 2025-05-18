@@ -1,12 +1,17 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, TrendingUp, DollarSign } from "lucide-react"
+import { useEffect, useState } from "react";
+import axios from "axios";
 import {
-  Area,
-  AreaChart,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, TrendingUp, DollarSign } from "lucide-react";
+import {
   Bar,
   BarChart,
   CartesianGrid,
@@ -17,8 +22,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts"
-import axios from "axios"
+} from "recharts";
 
 interface PopulationGrowth {
   insights: string;
@@ -49,123 +53,194 @@ interface DemographicTrends {
   spending: SpendingData[];
 }
 
-interface ApiResponse {
-  demographicTrends: DemographicTrends;
-  success?: boolean;
-  error?: string;
-}
-
 interface DemographicsProps {
   loading?: boolean;
   setLoading?: (value: boolean) => void;
 }
 
-// Add default data structures for empty states
-const defaultPopulationData = [
-  { year: '2020', Brooklyn: 0, Queens: 0, Manhattan: 0 },
-  { year: '2021', Brooklyn: 0, Queens: 0, Manhattan: 0 },
-  { year: '2022', Brooklyn: 0, Queens: 0, Manhattan: 0 },
-  { year: '2023', Brooklyn: 0, Queens: 0, Manhattan: 0 }
+
+//Got estimates from chatgpt
+const chartSpendingData = [
+  { category: "Retail", amount: 9_000 },   
+  { category: "Food", amount: 11_288 },          
+  { category: "Entertainment", amount: 3_635 }, 
+  { category: "Transportation", amount: 12_836 }, 
 ];
 
-const defaultIncomeData = [
-  { year: '2020', Brooklyn: 0, Queens: 0, Manhattan: 0 },
-  { year: '2021', Brooklyn: 0, Queens: 0, Manhattan: 0 },
-  { year: '2022', Brooklyn: 0, Queens: 0, Manhattan: 0 },
-  { year: '2023', Brooklyn: 0, Queens: 0, Manhattan: 0 }
-];
 
-const defaultSpendingData = [
-  { category: 'Retail', amount: 0 },
-  { category: 'Food', amount: 0 },
-  { category: 'Entertainment', amount: 0 },
-  { category: 'Transportation', amount: 0 }
-];
+const counties = {
+  Brooklyn: "047",
+  Manhattan: "061",
+  Bronx: "005",
+  Queens: "081"
+};
 
-export default function Demographics({ loading, setLoading }: DemographicsProps) {
-  const [demographicData, setDemographicData] = useState<DemographicTrends | null>(null);
-  const [error, setError] = useState<string | null>(null);
+
+
+const years = [2021, 2022, 2023];
+
+// Define the expected API response type
+interface ApiResponse {
+  demographicTrends: DemographicTrends;
+}
+
+export default function Demographics({
+  loading,
+  setLoading,
+}: DemographicsProps) {
+  const [demographicData, setDemographicData] =
+    useState<DemographicTrends | null>(null);
+    const [error, setError] = useState<string | null>(null);
   const [chartData, setChartData] = useState({
-    population: defaultPopulationData,
-    income: defaultIncomeData,
-    spending: defaultSpendingData
+    spending: chartSpendingData,
   });
 
+  const [populationData, setPopulationData] = useState<
+    Record<string, Record<string, number>>
+  >({});
+  const [householdIncome, setHouseholdIncome] = useState<Record<string, Record<string, number>>>({})
+
   useEffect(() => {
-    const fetchDemographicData = async () => {
-      if (setLoading) setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/data/latest`);
+     const fetchDemographicData = async () => {
+       if (setLoading) setLoading(true);
+       setError(null);
+       
+       try {
+         const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/source/latest`);
+         
+         if (!response.data?.demographicTrends) {
+           throw new Error("Invalid data format received from server");
+         }
+ 
+         setDemographicData(response.data.demographicTrends);
+ 
         
-        if (!response.data?.demographicTrends) {
-          throw new Error("Invalid data format received from server");
+       } catch (error) {
+         const errorMessage = error instanceof Error ? error.message : "Failed to load demographic data";
+         console.error("Failed to load data:", error);
+         setError(errorMessage);
+      
+       
+       } finally {
+         if (setLoading) setLoading(false);
+       }
+     };
+ 
+     fetchDemographicData();
+   }, [setLoading]);
+ 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const results: Record<string, Record<string, number>> = {};
+      for (const year of years) {
+        results[year] = {};
+        for (const [borough, code] of Object.entries(counties)) {
+          try {
+            const response = await axios.get(
+              `https://api.census.gov/data/${year}/acs/acs1?get=B01003_001E&for=county:${code}&in=state:36`
+            );
+
+            const [, valueRow] = response.data;
+            const population = parseInt(valueRow[0]);
+            results[year][borough] = population;
+          } catch (error) {
+            console.error(
+              `Error fetching data for ${borough} in ${year}:`,
+              error
+            );
+          }
         }
-
-        setDemographicData(response.data.demographicTrends);
-
-        // Transform the data for charts if available
-        if (response.data.demographicTrends.population_growth) {
-          const populationData = response.data.demographicTrends.population_growth.map(item => ({
-            year: item.year,
-            Brooklyn: item.population || 0,
-            Queens: item.population || 0,
-            Manhattan: item.population || 0
-          }));
-          setChartData(prev => ({ ...prev, population: populationData }));
-        }
-
-        if (response.data.demographicTrends.income) {
-          const incomeData = response.data.demographicTrends.income.map(item => ({
-            year: item.year || new Date().getFullYear().toString(),
-            Brooklyn: item.income || 0,
-            Queens: item.income || 0,
-            Manhattan: item.income || 0
-          }));
-          setChartData(prev => ({ ...prev, income: incomeData }));
-        }
-
-        if (response.data.demographicTrends.spending) {
-          const spendingData = response.data.demographicTrends.spending.map(item => ({
-            category: item.category || 'Other',
-            amount: item.amount || 0
-          }));
-          setChartData(prev => ({ ...prev, spending: spendingData }));
-        }
-
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Failed to load demographic data";
-        console.error("Failed to load data:", error);
-        setError(errorMessage);
-        // Reset to default data on error
-        setChartData({
-          population: defaultPopulationData,
-          income: defaultIncomeData,
-          spending: defaultSpendingData
-        });
-      } finally {
-        if (setLoading) setLoading(false);
       }
+
+      results["2024"] = {
+        Brooklyn: 2800000,
+        Manhattan: 1650000,
+        Bronx: 1450000,
+        Queens: 2250000
+      };
+
+      setPopulationData(results);
     };
 
-    fetchDemographicData();
-  }, [setLoading]);
+    fetchData();
+  }, []);
 
-  const populationContent = demographicData?.population_growth?.map((item, index) => (
-    <div key={index} className="flex justify-between items-center">
-      <div>
-        <h3 className="font-medium">Population Trends</h3>
-        <p className="text-sm text-gray-500">{item.insights}</p>
-      </div>
-      <div className="text-right">
-        <div className="text-sm font-medium">{item.state} Population</div>
-        <div className="text-lg font-bold text-green-600">
-          {(item.population / 1000000).toFixed(1)}M
+  const data = Object.entries(populationData).map(([year, boroughs]) => ({
+    year,
+    ...boroughs,
+  }));
+
+  
+  useEffect(() => {
+    const fetchIncomeData = async () => {
+  const results: Record<string, Record<string, number>> = {}
+
+  for (const year of years) {
+    results[year] = {}
+
+    for (const [borough, code] of Object.entries(counties)) {
+      try {
+        const response = await axios.get(
+          `https://api.census.gov/data/${year}/acs/acs1?get=B19013_001E&for=county:${code}&in=state:36`
+        )
+
+        const data = response.data
+        if (data.length > 1 && data[1][0] !== null) {
+          const income = Number(data[1][0])
+          results[year][borough] = income
+        } else {
+          results[year][borough] = 0
+        }
+      } catch (err) {
+        console.error(`Error fetching income for ${borough} in ${year}`, err)
+        results[year][borough] = 0
+      }
+    }
+  }
+
+  // Add 2024 manually
+  results["2024"] = {
+  Brooklyn: 70000,
+  Manhattan: 95000,
+  Bronx: 45000,
+  Queens: 82000
+};
+  setHouseholdIncome(results)
+}
+
+
+    fetchIncomeData()
+  }, [])
+
+  useEffect(() => {
+    console.log("Income Data:", householdIncome)
+  }, [householdIncome])
+
+    const income = Object.entries(householdIncome).map(([year, boroughs]) => ({
+    year,
+    ...boroughs,
+  }));
+
+
+
+
+  const populationContent = demographicData?.population_growth?.map(
+    (item, index) => (
+      <div key={index} className="flex justify-between items-center">
+        <div>
+          <h3 className="font-medium">Population Trends</h3>
+          <p className="text-sm text-gray-500">{item.insights}</p>
+        </div>
+        <div className="text-right">
+          <div className="text-sm font-medium">{item.state} Population</div>
+          <div className="text-lg font-bold text-green-600">
+            {(item.population / 1000000).toFixed(1)}M
+          </div>
         </div>
       </div>
-    </div>
-  ));
+    )
+  );
 
   const incomeContent = demographicData?.income?.map((item, index) => (
     <div key={index} className="flex justify-between items-center">
@@ -197,16 +272,6 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
     </div>
   ));
 
-  if (error) {
-    return (
-      <Card className="shadow-none border-t rounded-none mt-5">
-        <CardContent className="p-6">
-          <div className="text-red-500">Error loading demographic data: {error}</div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="shadow-none border-t rounded-none mt-5">
       <CardHeader className="pb-3">
@@ -214,7 +279,9 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
           <Users className="h-5 w-5 mr-2" />
           Demographic Trends
         </CardTitle>
-        <CardDescription>Population growth, income trends, and workforce composition</CardDescription>
+        <CardDescription>
+          Population growth, income trends, and workforce composition
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="population" className="w-full">
@@ -223,55 +290,33 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
             <TabsTrigger value="income">Income Growth</TabsTrigger>
             <TabsTrigger value="spending">Consumer Spending</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="population">
             <div className="space-y-4 max-w-7xl mx-auto">
               {demographicData?.population_growth ? (
                 populationContent
               ) : (
-                <div className="text-sm text-gray-500">No population data available</div>
+                <div className="text-sm text-gray-500">
+                  No population data available
+                </div>
               )}
-              <div className="h-80 w-full">
+              <div className="h-80 w-full ">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart 
-                    data={chartData.population} 
-                    margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+                  <BarChart
+                    data={data}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                   >
-                    <defs>
-                      <linearGradient id="colorBrooklyn" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0.1} />
-                      </linearGradient>
-                      <linearGradient id="colorQueens" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1} />
-                      </linearGradient>
-                      <linearGradient id="colorManhattan" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.1} />
-                      </linearGradient>
-                    </defs>
                     <XAxis dataKey="year" />
-                    <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`} />
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip formatter={(value) => [`${value.toLocaleString()}`, "Population"]} />
-                    <Area
-                      type="monotone"
-                      dataKey="Brooklyn"
-                      stroke="#0ea5e9"
-                      fillOpacity={1}
-                      fill="url(#colorBrooklyn)"
-                    />
-                    <Area type="monotone" dataKey="Queens" stroke="#6366f1" fillOpacity={1} fill="url(#colorQueens)" />
-                    <Area
-                      type="monotone"
-                      dataKey="Manhattan"
-                      stroke="#10b981"
-                      fillOpacity={1}
-                      fill="url(#colorManhattan)"
+                    <YAxis />
+                    <Tooltip
+                      formatter={(value: number) => value.toLocaleString()}
                     />
                     <Legend />
-                  </AreaChart>
+                    <Bar dataKey="Brooklyn" fill="#6366f1" />
+                    <Bar dataKey="Manhattan" fill="#10b981" />
+                    <Bar dataKey="Bronx" fill="#0ea5e9" />
+                    <Bar dataKey="Queens" fill="#0d5cb3" />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
 
@@ -279,7 +324,9 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
                 <div className="border rounded-md p-3">
                   <div className="text-sm text-gray-500">Brooklyn</div>
                   <div className="text-lg font-bold">2.8M</div>
-                  <div className="text-xs text-green-600">31% of NYC population</div>
+                  <div className="text-xs text-green-600">
+                    31% of NYC population
+                  </div>
                 </div>
               </div>
             </div>
@@ -290,18 +337,29 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
               {demographicData?.income ? (
                 incomeContent
               ) : (
-                <div className="text-sm text-gray-500">No income data available</div>
+                <div className="text-sm text-gray-500">
+                  No income data available
+                </div>
               )}
               <div className="h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart 
-                    data={chartData.income} 
+                  <LineChart
+                    data={income}
                     margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                   >
                     <XAxis dataKey="year" />
-                    <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                    <YAxis
+                      tickFormatter={(value) =>
+                        `$${(value / 1000).toFixed(0)}k`
+                      }
+                    />
                     <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, "Median Income"]} />
+                    <Tooltip
+                      formatter={(value) => [
+                        `$${value.toLocaleString()}`,
+                        "Median Income",
+                      ]}
+                    />
                     <Line
                       type="monotone"
                       dataKey="Brooklyn"
@@ -356,18 +414,29 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
               {demographicData?.spending ? (
                 spendingContent
               ) : (
-                <div className="text-sm text-gray-500">No spending data available</div>
+                <div className="text-sm text-gray-500">
+                  No spending data available
+                </div>
               )}
               <div className="h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart 
-                    data={chartData.spending} 
+                  <BarChart
+                    data={chartData.spending}
                     margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                   >
                     <XAxis dataKey="category" />
-                    <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                    <YAxis
+                      tickFormatter={(value) =>
+                        `$${(value / 1000).toFixed(0)}k`
+                      }
+                    />
                     <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, "Annual Spending"]} />
+                    <Tooltip
+                      formatter={(value) => [
+                        `$${value.toLocaleString()}`,
+                        "Annual Spending",
+                      ]}
+                    />
                     <Bar dataKey="amount" fill="#0ea5e9" />
                     <Legend />
                   </BarChart>
@@ -401,19 +470,29 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
                 </div>
 
                 <div className="border-t pt-4 mt-4">
-                  <div className="text-sm font-medium mb-2">Consumer Trends</div>
+                  <div className="text-sm font-medium mb-2">
+                    Consumer Trends
+                  </div>
                   <ul className="text-sm space-y-1">
                     <li className="flex items-start">
                       <TrendingUp className="h-4 w-4 text-green-500 mr-1 mt-0.5" />
-                      <span>E-commerce sales still only ~15% of total retail sales (Q1 2024)</span>
+                      <span>
+                        E-commerce sales still only ~15% of total retail sales
+                        (Q1 2024)
+                      </span>
                     </li>
                     <li className="flex items-start">
                       <TrendingUp className="h-4 w-4 text-green-500 mr-1 mt-0.5" />
-                      <span>Increased consumer reliance on e-commerce driving demand</span>
+                      <span>
+                        Increased consumer reliance on e-commerce driving demand
+                      </span>
                     </li>
                     <li className="flex items-start">
                       <TrendingUp className="h-4 w-4 text-green-500 mr-1 mt-0.5" />
-                      <span>Amazon maintains #1 market share of e-commerce gross sales</span>
+                      <span>
+                        Amazon maintains #1 market share of e-commerce gross
+                        sales
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -423,5 +502,5 @@ export default function Demographics({ loading, setLoading }: DemographicsProps)
         </Tabs>
       </CardContent>
     </Card>
-  )
+  );
 }

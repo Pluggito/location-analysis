@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import PdfGenerator from "./components/pdf-extract";
 import { useState } from "react";
 import SourceUpload from "./components/source-upload";
+import Population from "./population";
 
 export default function Home() {
   const [isUploaded, setIsUploaded] = useState(false);
@@ -72,6 +73,20 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/*<section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+        <SupplyPipeline loading={loading} setLoading={setLoading}/>
+        <SalesComparables  loading={loading} setLoading={setLoading} />
+        <div className="md:col-span-2">
+         <Demographics/>
+        </div>
+        <div className="md:col-span-2">
+          
+        <Proximity loading={loading} setLoading={setLoading} />
+        <ZonesOverlays />
+        </div>
+       
+      </section>*/}
 
       {isUploaded ? (<section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
         <SupplyPipeline loading={loading} setLoading={setLoading}/>
