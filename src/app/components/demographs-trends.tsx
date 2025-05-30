@@ -18,6 +18,9 @@ import {
   Legend,
   Line,
   LineChart,
+  PieChart,
+  Pie,
+  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -58,24 +61,20 @@ interface DemographicsProps {
   setLoading?: (value: boolean) => void;
 }
 
-
 //Got estimates from chatgpt
 const chartSpendingData = [
-  { category: "Retail", amount: 9_000 },   
-  { category: "Food", amount: 11_288 },          
-  { category: "Entertainment", amount: 3_635 }, 
-  { category: "Transportation", amount: 12_836 }, 
+  { category: "Retail", amount: 9_000 },
+  { category: "Food", amount: 11_288 },
+  { category: "Entertainment", amount: 3_635 },
+  { category: "Transportation", amount: 12_836 },
 ];
-
 
 const counties = {
   Brooklyn: "047",
   Manhattan: "061",
   Bronx: "005",
-  Queens: "081"
+  Queens: "081",
 };
-
-
 
 const years = [2021, 2022, 2023];
 
@@ -90,7 +89,7 @@ export default function Demographics({
 }: DemographicsProps) {
   const [demographicData, setDemographicData] =
     useState<DemographicTrends | null>(null);
-    const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [chartData, setChartData] = useState({
     spending: chartSpendingData,
   });
@@ -98,37 +97,39 @@ export default function Demographics({
   const [populationData, setPopulationData] = useState<
     Record<string, Record<string, number>>
   >({});
-  const [householdIncome, setHouseholdIncome] = useState<Record<string, Record<string, number>>>({})
+  const [householdIncome, setHouseholdIncome] = useState<
+    Record<string, Record<string, number>>
+  >({});
 
   useEffect(() => {
-     const fetchDemographicData = async () => {
-       if (setLoading) setLoading(true);
-       setError(null);
-       
-       try {
-         const response = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_API_BASE_URL}/source/latest`);
-         
-         if (!response.data?.demographicTrends) {
-           throw new Error("Invalid data format received from server");
-         }
- 
-         setDemographicData(response.data.demographicTrends);
- 
-        
-       } catch (error) {
-         const errorMessage = error instanceof Error ? error.message : "Failed to load demographic data";
-         console.error("Failed to load data:", error);
-         setError(errorMessage);
-      
-       
-       } finally {
-         if (setLoading) setLoading(false);
-       }
-     };
- 
-     fetchDemographicData();
-   }, [setLoading]);
- 
+    const fetchDemographicData = async () => {
+      if (setLoading) setLoading(true);
+      setError(null);
+
+      try {
+        const response = await axios.get<ApiResponse>(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/source/latest`
+        );
+
+        if (!response.data?.demographicTrends) {
+          throw new Error("Invalid data format received from server");
+        }
+
+        setDemographicData(response.data.demographicTrends);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to load demographic data";
+        console.error("Failed to load data:", error);
+        setError(errorMessage);
+      } finally {
+        if (setLoading) setLoading(false);
+      }
+    };
+
+    fetchDemographicData();
+  }, [setLoading]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -157,7 +158,7 @@ export default function Demographics({
         Brooklyn: 2800000,
         Manhattan: 1650000,
         Bronx: 1450000,
-        Queens: 2250000
+        Queens: 2250000,
       };
 
       setPopulationData(results);
@@ -171,59 +172,57 @@ export default function Demographics({
     ...boroughs,
   }));
 
-  
   useEffect(() => {
     const fetchIncomeData = async () => {
-  const results: Record<string, Record<string, number>> = {}
+      const results: Record<string, Record<string, number>> = {};
 
-  for (const year of years) {
-    results[year] = {}
+      for (const year of years) {
+        results[year] = {};
 
-    for (const [borough, code] of Object.entries(counties)) {
-      try {
-        const response = await axios.get(
-          `https://api.census.gov/data/${year}/acs/acs1?get=B19013_001E&for=county:${code}&in=state:36`
-        )
+        for (const [borough, code] of Object.entries(counties)) {
+          try {
+            const response = await axios.get(
+              `https://api.census.gov/data/${year}/acs/acs1?get=B19013_001E&for=county:${code}&in=state:36`
+            );
 
-        const data = response.data
-        if (data.length > 1 && data[1][0] !== null) {
-          const income = Number(data[1][0])
-          results[year][borough] = income
-        } else {
-          results[year][borough] = 0
+            const data = response.data;
+            if (data.length > 1 && data[1][0] !== null) {
+              const income = Number(data[1][0]);
+              results[year][borough] = income;
+            } else {
+              results[year][borough] = 0;
+            }
+          } catch (err) {
+            console.error(
+              `Error fetching income for ${borough} in ${year}`,
+              err
+            );
+            results[year][borough] = 0;
+          }
         }
-      } catch (err) {
-        console.error(`Error fetching income for ${borough} in ${year}`, err)
-        results[year][borough] = 0
       }
-    }
-  }
 
-  // Add 2024 manually
-  results["2024"] = {
-  Brooklyn: 70000,
-  Manhattan: 95000,
-  Bronx: 45000,
-  Queens: 82000
-};
-  setHouseholdIncome(results)
-}
+      // Add 2024 manually
+      results["2024"] = {
+        Brooklyn: 70000,
+        Manhattan: 95000,
+        Bronx: 45000,
+        Queens: 82000,
+      };
+      setHouseholdIncome(results);
+    };
 
-
-    fetchIncomeData()
-  }, [])
+    fetchIncomeData();
+  }, []);
 
   useEffect(() => {
-    console.log("Income Data:", householdIncome)
-  }, [householdIncome])
+    console.log("Income Data:", householdIncome);
+  }, [householdIncome]);
 
-    const income = Object.entries(householdIncome).map(([year, boroughs]) => ({
+  const income = Object.entries(householdIncome).map(([year, boroughs]) => ({
     year,
     ...boroughs,
   }));
-
-
-
 
   const populationContent = demographicData?.population_growth?.map(
     (item, index) => (
@@ -341,69 +340,134 @@ export default function Demographics({
                   No income data available
                 </div>
               )}
-              <div className="h-80 w-full">
+              <div className="h-96 w-full bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-lg shadow-inner p-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={income}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                    margin={{ top: 30, right: 40, left: 10, bottom: 10 }}
                   >
-                    <XAxis dataKey="year" />
+                    <CartesianGrid strokeDasharray="4 4" stroke="#e5e7eb" />
+                    <XAxis
+                      dataKey="year"
+                      tick={{ fontSize: 14, fill: "#64748b" }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <YAxis
                       tickFormatter={(value) =>
                         `$${(value / 1000).toFixed(0)}k`
                       }
+                      tick={{ fontSize: 14, fill: "#64748b" }}
+                      axisLine={false}
+                      tickLine={false}
                     />
-                    <CartesianGrid strokeDasharray="3 3" />
                     <Tooltip
+                      contentStyle={{
+                        background: "#fff",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        color: "#0f172a",
+                      }}
                       formatter={(value) => [
                         `$${value.toLocaleString()}`,
                         "Median Income",
                       ]}
                     />
+                    <Legend
+                      verticalAlign="top"
+                      align="right"
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: 14, marginBottom: 10 }}
+                    />
                     <Line
                       type="monotone"
                       dataKey="Brooklyn"
-                      stroke="#0ea5e9"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
+                      stroke="#6366f1"
+                      strokeWidth={3}
+                      dot={{
+                        r: 6,
+                        fill: "#6366f1",
+                        stroke: "#fff",
+                        strokeWidth: 2,
+                      }}
+                      activeDot={{
+                        r: 8,
+                        fill: "#6366f1",
+                        stroke: "#fff",
+                        strokeWidth: 3,
+                      }}
+                      name="Brooklyn"
                     />
                     <Line
                       type="monotone"
                       dataKey="Queens"
-                      stroke="#6366f1"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
+                      stroke="#0ea5e9"
+                      strokeWidth={3}
+                      dot={{
+                        r: 6,
+                        fill: "#0ea5e9",
+                        stroke: "#fff",
+                        strokeWidth: 2,
+                      }}
+                      activeDot={{
+                        r: 8,
+                        fill: "#0ea5e9",
+                        stroke: "#fff",
+                        strokeWidth: 3,
+                      }}
+                      name="Queens"
                     />
                     <Line
                       type="monotone"
                       dataKey="Manhattan"
                       stroke="#10b981"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
+                      strokeWidth={3}
+                      dot={{
+                        r: 6,
+                        fill: "#10b981",
+                        stroke: "#fff",
+                        strokeWidth: 2,
+                      }}
+                      activeDot={{
+                        r: 8,
+                        fill: "#10b981",
+                        stroke: "#fff",
+                        strokeWidth: 3,
+                      }}
+                      name="Manhattan"
                     />
-                    <Legend />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="grid grid-cols-3 gap-4 mt-4">
-                <div className="border rounded-md p-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                <div className="border rounded-lg p-4 bg-blue-50 flex flex-col items-center shadow">
                   <div className="text-sm text-gray-500">Brooklyn</div>
-                  <div className="text-lg font-bold">$75,000</div>
-                  <div className="text-xs text-green-600">+28.4% (5yr)</div>
+                  <div className="text-2xl font-bold text-blue-700">
+                    $75,000
+                  </div>
+                  <div className="text-xs text-green-600 mt-1">
+                    +28.4% (5yr)
+                  </div>
                 </div>
-                <div className="border rounded-md p-3">
+                <div className="border rounded-lg p-4 bg-cyan-50 flex flex-col items-center shadow">
                   <div className="text-sm text-gray-500">Queens</div>
-                  <div className="text-lg font-bold">$82,000</div>
-                  <div className="text-xs text-green-600">+19.4% (5yr)</div>
+                  <div className="text-2xl font-bold text-cyan-700">
+                    $82,000
+                  </div>
+                  <div className="text-xs text-green-600 mt-1">
+                    +19.4% (5yr)
+                  </div>
                 </div>
-                <div className="border rounded-md p-3">
+                <div className="border rounded-lg p-4 bg-green-50 flex flex-col items-center shadow">
                   <div className="text-sm text-gray-500">Manhattan</div>
-                  <div className="text-lg font-bold">$105,000</div>
-                  <div className="text-xs text-green-600">+19.5% (5yr)</div>
+                  <div className="text-2xl font-bold text-green-700">
+                    $105,000
+                  </div>
+                  <div className="text-xs text-green-600 mt-1">
+                    +19.5% (5yr)
+                  </div>
                 </div>
               </div>
             </div>
@@ -418,28 +482,32 @@ export default function Demographics({
                   No spending data available
                 </div>
               )}
-              <div className="h-80 w-full">
+              <div className="h-96 w-full flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={chartData.spending}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <XAxis dataKey="category" />
-                    <YAxis
-                      tickFormatter={(value) =>
-                        `$${(value / 1000).toFixed(0)}k`
+                  <PieChart>
+                    <Pie
+                      data={chartData.spending}
+                      dataKey="amount"
+                      nameKey="category"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={140}
+                      fill="#0ea5e9"
+                      label={({ category }) => category}
+                    >
+                      {/* Custom colors for each category */}
+                      <Cell fill="#6366f1" /> {/* Retail */}
+                      <Cell fill="#10b981" /> {/* Food */}
+                      <Cell fill="#f59e42" /> {/* Entertainment */}
+                      <Cell fill="#ef4444" /> {/* Transportation */}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) =>
+                        `$${value.toLocaleString()}`
                       }
                     />
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip
-                      formatter={(value) => [
-                        `$${value.toLocaleString()}`,
-                        "Annual Spending",
-                      ]}
-                    />
-                    <Bar dataKey="amount" fill="#0ea5e9" />
                     <Legend />
-                  </BarChart>
+                  </PieChart>
                 </ResponsiveContainer>
               </div>
 

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   ArrowLeft,
@@ -22,7 +22,7 @@ import Population from "./population";
 
 export default function Home() {
   const [isUploaded, setIsUploaded] = useState(false);
-  const [loading, setLoading ] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className="container relative overflow-hidden mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
@@ -88,16 +88,25 @@ export default function Home() {
        
       </section>*/}
 
-      {isUploaded ? (<section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
-        <SupplyPipeline loading={loading} setLoading={setLoading}/>
-        <SalesComparables  loading={loading} setLoading={setLoading} />
-        <div className="md:col-span-2">
-          <Demographics />
-        </div>
-        <Proximity loading={loading} setLoading={setLoading} />
-        <ZonesOverlays />
-      </section>) : <SourceUpload loading={loading} setLoading={setLoading} setIsUploaded={setIsUploaded}/>}
-      
+      {isUploaded ? (
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+          <SupplyPipeline loading={loading} setLoading={setLoading} />
+          <SalesComparables loading={loading} setLoading={setLoading} />
+          <div className="md:col-span-2">
+            <Demographics />
+          </div>
+          <div className="md:col-span-2">
+            <Proximity loading={loading} setLoading={setLoading} />
+            <ZonesOverlays />
+          </div>
+        </section>
+      ) : (
+        <SourceUpload
+          loading={loading}
+          setLoading={setLoading}
+          setIsUploaded={setIsUploaded}
+        />
+      )}
     </div>
   );
 }
