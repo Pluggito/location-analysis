@@ -1,4 +1,4 @@
-"use client"
+{/*"use client"
 
 import { useState, useEffect, useRef } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet"
@@ -286,9 +286,9 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
         </CardContent>
       </Card>
 
-      {/* Travel Times Dashboard */}
+      {/* Travel Times Dashboard 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Ports Card */}
+        {/* Ports Card 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -323,7 +323,7 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
           </CardContent>
         </Card>
 
-        {/* Airports Card */}
+        {/* Airports Card 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -358,7 +358,7 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
           </CardContent>
         </Card>
 
-        {/* Highways Card */}
+        {/* Highways Card 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -394,7 +394,7 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
         </Card>
       </div>
 
-      {/* Map Section */}
+      {/* Map Section 
       <Card>
         <CardHeader>
           <CardTitle>Interactive Map</CardTitle>
@@ -426,7 +426,7 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
 
               <MapClickHandler onLocationClick={handleLocationClick} />
 
-              {/* Origin marker */}
+              {/* Origin marker
               <Marker position={origin as L.LatLngExpression} icon={originIcon}>
                 <Popup>
                   <div className="text-center">
@@ -441,7 +441,7 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
                 </Popup>
               </Marker>
 
-              {/* Ports */}
+              {/* Ports 
               {ports.map(({ name, coords, type }, idx) => (
                 <Marker key={`port-${idx}`} position={coords as L.LatLngExpression} icon={portIcon}>
                   <Popup>
@@ -456,7 +456,7 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
                 </Marker>
               ))}
 
-              {/* Airports */}
+              {/* Airports 
               {airports.map(({ name, coords, type }, idx) => (
                 <Marker key={`airport-${idx}`} position={coords as L.LatLngExpression} icon={airportIcon}>
                   <Popup>
@@ -471,7 +471,7 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
                 </Marker>
               ))}
 
-              {/* Highways */}
+              {/* Highways 
               {highways.map(({ name, coords, type }, idx) => (
                 <Marker key={`highway-${idx}`} position={coords as L.LatLngExpression} icon={highwayIcon}>
                   <Popup>
@@ -486,7 +486,7 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
                 </Marker>
               ))}
 
-              {/* Clicked location marker */}
+              {/* Clicked location marker 
               {clickedLocation && (
                 <Marker position={clickedLocation as L.LatLngExpression} icon={defaultIcon}>
                   <Popup>
@@ -519,4 +519,4 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
       </Card>
     </div>
   )
-}
+}*/}
