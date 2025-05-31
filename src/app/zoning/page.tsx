@@ -520,3 +520,12 @@ export default function ZolaMap({ mapId, initialOrigin = [40.672828, -74.015271]
     </div>
   )
 }*/}
+
+
+export default function ZoningPAge(){
+  return(
+    <div>
+      Hey i work 
+    </div>
+  )
+}
