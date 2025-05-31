@@ -215,6 +215,7 @@ export default function Demographics({
     fetchIncomeData();
   }, []);
 
+  //console log the data for debugging purposes
   useEffect(() => {
     console.log("Income Data:", householdIncome);
   }, [householdIncome]);
