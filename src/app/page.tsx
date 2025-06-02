@@ -19,6 +19,8 @@ import PdfGenerator from "./components/pdf-extract";
 import { useState } from "react";
 import SourceUpload from "./components/source-upload";
 import Population from "./population";
+import { Toaster } from "@/components/ui/sonner"
+import TestMap from "./testing";
 
 export default function Home() {
   const [isUploaded, setIsUploaded] = useState(false);
@@ -26,6 +28,7 @@ export default function Home() {
 
   return (
     <div className="container relative overflow-hidden mx-auto px-2 sm:px-4 lg:px-6 xl:px-8">
+      <Toaster />
       <ArrowLeft size={25} className="mt-3 sm:mt-1" />
       <LocationHeader />
 
@@ -83,7 +86,8 @@ export default function Home() {
         <div className="md:col-span-2">
           
         <Proximity loading={loading} setLoading={setLoading} />
-        <ZonesOverlays />
+        <TestMap mapId="main-map" />
+        {/*<ZonesOverlays />*
         </div>
        
       </section>*/}
