@@ -2,10 +2,11 @@
 
 
 import dynamic from "next/dynamic";
-import { Toaster } from "@/components/ui/sonner";
+//import { Toaster } from "@/components/ui/sonner";
 
 
-const ZoningMapTest = dynamic(() => import("./zolamaptest"), {
+
+const  ZoningPPage = dynamic(() => import("./testing"), {
     ssr: false,
     loading: () => (
       <div className="h-[400px] flex items-center justify-center">
@@ -24,7 +25,7 @@ export default function ZoningPage() {
       <p className="text-gray-600 mb-4">
         This section provides insights into the zoning regulations and classifications for the selected location.
       </p>
-      <ZoningMapTest/>
+      <ZoningPPage/>
     </div>
   );
 }

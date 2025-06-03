@@ -20,7 +20,7 @@ import { useState } from "react";
 import SourceUpload from "./components/source-upload";
 import Population from "./population";
 import { Toaster } from "@/components/ui/sonner"
-import TestMap from "./testing";
+import TestMap from "./zoning/testing";
 
 export default function Home() {
   const [isUploaded, setIsUploaded] = useState(false);
