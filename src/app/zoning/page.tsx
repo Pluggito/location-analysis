@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 
 
 
-const  ZoningPPage = dynamic(() => import("./testing"), {
+const  ZoningMapPage = dynamic(() => import("./zolamaptest"), {
     ssr: false,
     loading: () => (
       <div className="h-[400px] flex items-center justify-center">
@@ -25,7 +25,7 @@ export default function ZoningPage() {
       <p className="text-gray-600 mb-4">
         This section provides insights into the zoning regulations and classifications for the selected location.
       </p>
-      <ZoningPPage/>
+      <ZoningMapPage mapId="main-zoning-map" />
     </div>
   );
 }

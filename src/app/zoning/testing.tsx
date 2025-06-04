@@ -12,7 +12,7 @@ import L from "leaflet";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+//import { Button } from "@/components/ui/button";
 
 const createDefaultIcon = () => {
   return new L.Icon({
@@ -58,6 +58,10 @@ const highwayIcon = new L.Icon({
   popupAnchor: [1, -34],
 });
 
+//Average travel time zones
+
+
+//handler for map click events
 function MapClickHandler({
   onLocationClick,
 }: {
@@ -70,6 +74,8 @@ function MapClickHandler({
   });
   return null;
 }
+
+
 
 function MapLegend() {
   return (
@@ -113,6 +119,8 @@ function MapLegend() {
     </div>
   );
 }
+
+//Zola map props here 
 
 export default function ZoningPPage() {
   const initialOrigin: L.LatLngTuple = [40.672828, -74.015271];
