@@ -2,11 +2,13 @@
 
 
 import dynamic from "next/dynamic";
+import MapWithHighwayAccess from "./highwayaccesspoint";
+
 //import { Toaster } from "@/components/ui/sonner";
 
 
 
-const  ZoningMapPage = dynamic(() => import("./zolamaptest"), {
+const  ZoningMapPage= dynamic(() => import("./zolamaptest"), {
     ssr: false,
     loading: () => (
       <div className="h-[400px] flex items-center justify-center">
@@ -26,6 +28,8 @@ export default function ZoningPage() {
         This section provides insights into the zoning regulations and classifications for the selected location.
       </p>
       <ZoningMapPage mapId="main-zoning-map" />
+      {/*<CommercialDistrictMap/>*/}
+      {/*<MapWithHighwayAccess/> */}
     </div>
   );
 }
