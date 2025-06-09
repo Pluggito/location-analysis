@@ -595,8 +595,9 @@ export default function ZoningMap({
     },
     {
       name: "Downtown Manhattan",
-      coords: [40.7240928, -74.1046052],
+      coords: [40.6966859, -74.0309811],
     },
+    
     {
       name: "New Jersey Turnpike (Teaneck)",
       coords: [40.868056, -74.000778],
