@@ -8,7 +8,7 @@ import MapWithHighwayAccess from "./highwayaccesspoint";
 
 
 
-const  ZoningMapPage= dynamic(() => import("./zolamaptest"), {
+const  CommercialDistrictMap = dynamic(() => import("./commercialdistrict"), {
     ssr: false,
     loading: () => (
       <div className="h-[400px] flex items-center justify-center">
@@ -27,8 +27,8 @@ export default function ZoningPage() {
       <p className="text-gray-600 mb-4">
         This section provides insights into the zoning regulations and classifications for the selected location.
       </p>
-      <ZoningMapPage mapId="main-zoning-map" />
-      {/*<CommercialDistrictMap/>*/}
+      {/*<ZoningMapPage mapId="main-zoning-map" /> */}
+      <CommercialDistrictMap/>
       {/*<MapWithHighwayAccess/> */}
     </div>
   );

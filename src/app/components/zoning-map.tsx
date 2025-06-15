@@ -1295,7 +1295,7 @@ export default function ZoningMap({
                 ))}
 
               {/* Highways */}
-              {showHighwayOverlay &&
+              {/*showHighwayOverlay &&
                 highways.map(({ name, coords, type }, idx) => (
                   <Marker
                     key={`highway-${idx}`}
@@ -1338,7 +1338,7 @@ export default function ZoningMap({
                       </div>
                     </Popup>
                   </Marker>
-                ))}
+                ))*/}
 
               {/* Key Locations */}
               {showHighwayOverlay &&
